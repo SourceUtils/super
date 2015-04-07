@@ -46,6 +46,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local' }
+    maven { url 'https://sourceutils.github.io/super' }
 }
 
 dependencies {
