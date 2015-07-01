@@ -27,15 +27,20 @@ publishing {
 }
 
 def pubCreds = new File(System.properties['user.home'], '.m2/publish.groovy')
-if (pubCreds.exists()) {
+if (pubCreds.exists() || (System.env['CI_DEPLOY_USERNAME'] && System.env['CI_DEPLOY_PASSWORD'])) {
     uploadArchives {
         repositories.mavenDeployer {
             // 'oss-release-local'
             repository(url: 'https://oss.jfrog.org/artifactory/oss-snapshot-local') {
-                def creds = [:]
-                def b = new Binding()
-                b.setVariable("creds", creds)
-                new GroovyShell(b).evaluate(pubCreds.toURI())
+                def creds = [
+                        userName: System.env['CI_DEPLOY_USERNAME'],
+                        password: System.env['CI_DEPLOY_PASSWORD']
+                ]
+                if (pubCreds.exists()) {
+                    def b = new Binding()
+                    b.setVariable("creds", creds)
+                    new GroovyShell(b).evaluate(pubCreds.toURI())
+                }
                 authentication(creds)
             }
         }
